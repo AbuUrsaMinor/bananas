@@ -4,7 +4,8 @@ import { defineConfig } from 'vite'
 import { VitePWA } from 'vite-plugin-pwa'
 
 // https://vite.dev/config/
-export default defineConfig({  base: '/bananas/', // Set base for GitHub Pages deployment
+export default defineConfig({
+  base: '/bananas/', // Set base for GitHub Pages deployment
   plugins: [
     react(),
     tailwindcss(),
@@ -17,7 +18,7 @@ export default defineConfig({  base: '/bananas/', // Set base for GitHub Pages d
         description: 'Bananas Web Application',
         theme_color: '#242424',
         background_color: '#242424',
-        display: 'standalone',        start_url: '/bananas/',
+        display: 'standalone', start_url: '/bananas/',
         icons: [
           {
             src: 'vite.svg',
