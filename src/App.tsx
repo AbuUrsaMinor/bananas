@@ -4,7 +4,6 @@ import { useSwipeable } from 'react-swipeable';
 import { Calendar } from './components/Calendar';
 import { FruitCounter } from './components/FruitCounter';
 import { DATE_FORMAT } from './constants';
-import { testStore } from './store-test';
 import { useFruitStore } from './store/fruitStore';
 
 function App() {
@@ -97,18 +96,6 @@ function App() {
           <span className={`text-xs mt-1 ${activeTab === 'counter' ? 'text-accent' : 'text-ink-400'}`}>
             Today
           </span>
-        </button>
-
-        {/* Debug button - remove in production */}
-        <button
-          onClick={() => {
-            testStore();
-            console.log('Current fruits:', useFruitStore.getState().debug());
-          }}
-          className="flex flex-col items-center justify-center h-full px-4 py-1"
-          aria-label="Test store"
-        >
-          <span className="text-xs">Debug</span>
         </button>
       </nav>
 

@@ -1,34 +1,18 @@
 import clsx from "clsx";
 import { eachDayOfInterval, endOfMonth, format, getDay, isSameDay, isSameMonth, startOfMonth } from "date-fns";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { DATE_FORMAT, fruitEmojis } from "../constants";
-import { testLocalStorage } from "../localStorage-test";
 import { useFruitStore } from "../store/fruitStore";
 import type { FruitType } from "../types";
 
 export function Calendar() {
     const [currentDate] = useState(new Date());
-    const { fruits, debug, addFruit } = useFruitStore();
+    const { fruits } = useFruitStore();
     const start = useMemo(() => startOfMonth(currentDate), [currentDate]);
     const end = useMemo(() => endOfMonth(currentDate), [currentDate]);
 
-    // Debug: log store contents and test localStorage
-    useEffect(() => {
-        console.log("Calendar component fruits:", debug());
-        testLocalStorage();
-    }, [fruits, debug]);
-
-    // Debug function to add a test fruit when the component mounts
-    useEffect(() => {
-        // Add test fruit to today''s date
-        const today = format(new Date(), DATE_FORMAT);
-        console.log("Adding test banana on mount to:", today);
-        addFruit(today, "banana");
-    }, [addFruit]);
-
     const getDayFruits = useCallback((date: Date) => {
         const key = format(date, DATE_FORMAT);
-        console.log("Getting fruits for date:", key, "Value:", fruits[key]);
         return fruits[key] || { banana: 0, apple: 0, orange: 0 };
     }, [fruits]);
 

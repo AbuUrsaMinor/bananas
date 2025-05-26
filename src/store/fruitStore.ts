@@ -60,7 +60,6 @@ interface FruitStore {
     fruits: DailyFruitCounts;
     addFruit: (date: string, type: FruitType) => void;
     removeFruit: (date: string, type: FruitType) => void;
-    debug: () => DailyFruitCounts;
     resetStore: () => void;
     getMonthlyStats: (year: number, month: number) => {
         banana: number;
@@ -71,18 +70,11 @@ interface FruitStore {
 }
 
 export const useFruitStore = create<FruitStore>()(
-    persist(
-        (set, get) => ({
+    persist(        (set, get) => ({
             fruits: {},
-
-            debug: () => {
-                console.log('Current store state:', get().fruits);
-                return get().fruits;
-            },
-
+            
             resetStore: () => {
                 set({ fruits: {} });
-                console.log('Store reset');
             },
 
             addFruit: (date: string, type: FruitType) => {
@@ -95,14 +87,11 @@ export const useFruitStore = create<FruitStore>()(
 
                     if (!newFruits[date]) {
                         newFruits[date] = getInitialFruitCounts();
-                    }
-
-                    newFruits[date] = {
+                    }                    newFruits[date] = {
                         ...newFruits[date],
                         [type]: (newFruits[date][type] || 0) + 1,
                     };
-
-                    console.log('Added fruit:', type, 'to', date, 'in store:', newFruits);
+                    
                     return { fruits: newFruits };
                 });
             },

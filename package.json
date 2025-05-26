@@ -12,7 +12,9 @@
     "deploy": "gh-pages -d dist",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage",
+    "generate-icons": "node scripts/generate-icons.mjs",
+    "prebuild": "npm run generate-icons"
   },
   "dependencies": {
     "clsx": "^2.1.1",
@@ -40,6 +42,7 @@
     "globals": "^16.0.0",
     "jsdom": "^26.1.0",
     "postcss": "^8.5.3",
+    "sharp": "^0.34.2",
     "tailwindcss": "^4.1.7",
     "typescript": "~5.8.3",
     "typescript-eslint": "^8.30.1",
