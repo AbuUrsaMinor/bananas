@@ -1,7 +1,7 @@
 import clsx from "clsx";
 import { eachDayOfInterval, endOfMonth, format, getDay, isSameDay, isSameMonth, startOfMonth } from "date-fns";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { DATE_FORMAT } from "../constants";
+import { DATE_FORMAT, fruitEmojis } from "../constants";
 import { testLocalStorage } from "../localStorage-test";
 import { useFruitStore } from "../store/fruitStore";
 import type { FruitType } from "../types";
@@ -88,21 +88,24 @@ export function Calendar() {
                                     {format(day, "d")}
                                 </div>
 
-                                {/* Data pills for fruits - showing dots per design spec */}
+                                {/* Fruit emojis instead of dots */}
                                 {totalFruits > 0 && (
-                                    <div className="flex gap-0.5 px-1">
-                                        {/* Show up to 3 dots */}
+                                    <div className="flex flex-wrap gap-0.5 px-1">
+                                        {/* Show up to 3 fruit emojis */}
                                         {activeFruits.slice(0, 3).map(fruit => (
-                                            <div
+                                            <span
                                                 key={fruit}
-                                                className="h-2 w-2 rounded-full bg-accent"
+                                                className="text-[10px]"
                                                 title={`${dayFruits[fruit]} ${fruit}${dayFruits[fruit] > 1 ? "s" : ""}`}
-                                            />
+                                            >
+                                                {fruitEmojis[fruit]}
+                                                {dayFruits[fruit] > 1 && <sub className="text-[7px]">{dayFruits[fruit]}</sub>}
+                                            </span>
                                         ))}
 
                                         {/* Show +N indicator if more than 3 fruit types */}
                                         {activeFruits.length > 3 && (
-                                            <span className="text-[10px] text-accent font-medium">
+                                            <span className="text-[8px] text-accent font-medium">
                                                 +{activeFruits.length - 3}
                                             </span>
                                         )}
