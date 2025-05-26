@@ -1,6 +1,6 @@
 import clsx from "clsx";
 import { eachDayOfInterval, endOfMonth, format, getDay, isSameDay, isSameMonth, startOfMonth } from "date-fns";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { DATE_FORMAT, fruitEmojis } from "../constants";
 import { useFruitStore } from "../store/fruitStore";
 import type { FruitType } from "../types";
@@ -10,19 +10,46 @@ export function Calendar() {
     const { fruits } = useFruitStore();
     const start = useMemo(() => startOfMonth(currentDate), [currentDate]);
     const end = useMemo(() => endOfMonth(currentDate), [currentDate]);
+    
+    const calendarDays = useMemo(() => eachDayOfInterval({ start, end }), [start, end]);
+    
+    // Calculate the number of weeks in the month to determine grid height
+    const numWeeks = useMemo(() => {
+        const firstDayOfMonth = getDay(start);
+        const daysInMonth = calendarDays.length;
+        return Math.ceil((firstDayOfMonth + daysInMonth) / 7);
+    }, [start, calendarDays]);
 
     const getDayFruits = useCallback((date: Date) => {
         const key = format(date, DATE_FORMAT);
         return fruits[key] || { banana: 0, apple: 0, orange: 0 };
     }, [fruits]);
 
-    const calendarDays = useMemo(() => eachDayOfInterval({ start, end }), [start, end]);
+    // Use effect to calculate available space
+    useEffect(() => {
+        const handleResize = () => {
+            // This will force a re-render when window size changes
+            forceUpdate(c => c + 1);
+        };
+
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
+    
+    // Force re-render on resize
+    const [, forceUpdate] = useState(0);
 
     return (
         <div className="h-full w-full flex flex-col bg-surface-100">
-            <div className="flex-1 overflow-auto px-4 py-4 overscroll-contain">
-                {/* Using CSS Grid with gap as per design spec */}
-                <div className="grid grid-cols-7 gap-1">
+            <div className="flex-1 overflow-auto px-4 py-4 overscroll-contain flex flex-col">
+                {/* Using CSS Grid with gap as per design spec, now with full height */}
+                <div 
+                    className="grid grid-cols-7 gap-1 flex-1"
+                    style={{ 
+                        gridTemplateRows: `auto repeat(${numWeeks}, 1fr)`,
+                        minHeight: "calc(100% - 8px)" // Account for padding
+                    }}
+                >
                     {/* Day of week header row */}
                     {[
                         { key: "sun", label: "S" },
@@ -42,7 +69,7 @@ export function Calendar() {
 
                     {/* Generate placeholders for days before the first day of the month */}
                     {Array.from({ length: getDay(start) }).map((_placeholder, index) => (
-                        <div key={`empty-${index}`} className="aspect-square min-h-[44px]"></div>
+                        <div key={`empty-${index}`} className="aspect-square h-full"></div>
                     ))}
 
                     {/* Actual calendar days */}
@@ -61,20 +88,20 @@ export function Calendar() {
                             <div
                                 key={day.toISOString()}
                                 className={clsx(
-                                    "aspect-square min-h-[44px] rounded-s",
+                                    "h-full w-full rounded-s p-1 flex flex-col",
                                     "transition-all duration-200",
                                     isToday ? "ring-1 ring-accent bg-accent/10" : "",
                                     !isCurrentMonth && "opacity-25"
                                 )}
                             >
                                 {/* Day number with proper sizing per design spec */}
-                                <div className="text-xs font-medium px-1 py-1">
+                                <div className="text-xs font-medium">
                                     {format(day, "d")}
                                 </div>
 
                                 {/* Fruit emojis instead of dots */}
                                 {totalFruits > 0 && (
-                                    <div className="flex flex-wrap gap-0.5 px-1">
+                                    <div className="flex flex-wrap gap-0.5 mt-1">
                                         {/* Show up to 3 fruit emojis */}
                                         {activeFruits.slice(0, 3).map(fruit => (
                                             <span
