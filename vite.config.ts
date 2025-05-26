@@ -8,7 +8,7 @@ export default defineConfig({
   base: '/bananas/', // Set base for GitHub Pages deployment
   plugins: [
     react(),
-    tailwindcss(),    VitePWA({
+    tailwindcss(), VitePWA({
       registerType: 'autoUpdate',
       includeAssets: ['bananas-icon.svg'],
       manifest: {
@@ -17,7 +17,7 @@ export default defineConfig({
         description: 'Fruit Consumption Tracker App',
         theme_color: '#4F8EF7',
         background_color: '#4F8EF7',
-        display: 'standalone', 
+        display: 'standalone',
         start_url: '/bananas/',
         icons: [
           {

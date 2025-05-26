@@ -70,88 +70,88 @@ interface FruitStore {
 }
 
 export const useFruitStore = create<FruitStore>()(
-    persist(        (set, get) => ({
-            fruits: {},
-            
-            resetStore: () => {
-                set({ fruits: {} });
-            },
+    persist((set, get) => ({
+        fruits: {},
 
-            addFruit: (date: string, type: FruitType) => {
-                if (!validateDate(date)) {
-                    throw new Error(`Invalid date format: ${date}. Use YYYY-MM-DD format.`);
-                }
+        resetStore: () => {
+            set({ fruits: {} });
+        },
 
-                set((state) => {
-                    const newFruits = { ...state.fruits };
+        addFruit: (date: string, type: FruitType) => {
+            if (!validateDate(date)) {
+                throw new Error(`Invalid date format: ${date}. Use YYYY-MM-DD format.`);
+            }
 
-                    if (!newFruits[date]) {
-                        newFruits[date] = getInitialFruitCounts();
-                    }                    newFruits[date] = {
-                        ...newFruits[date],
-                        [type]: (newFruits[date][type] || 0) + 1,
-                    };
-                    
-                    return { fruits: newFruits };
-                });
-            },
+            set((state) => {
+                const newFruits = { ...state.fruits };
 
-            removeFruit: (date: string, type: FruitType) => {
-                if (!validateDate(date)) {
-                    throw new Error(`Invalid date format: ${date}. Use YYYY-MM-DD format.`);
-                }
-
-                set((state) => {
-                    // Return unchanged state if date doesn't exist
-                    if (!state.fruits[date]) {
-                        return state;
-                    }
-
-                    const newFruits = { ...state.fruits };
-                    const currentCount = newFruits[date][type] || 0;
-
-                    if (currentCount === 0) {
-                        // Return unchanged state if there are no fruits to remove
-                        return state;
-                    }
-
-                    newFruits[date] = {
-                        ...newFruits[date],
-                        [type]: currentCount - 1
-                    };
-
-                    return { fruits: newFruits };
-                });
-            },
-
-            getMonthlyStats: (year: number, month: number) => {
-                if (!validateYearMonth(year, month)) {
-                    throw new Error(`Invalid year/month combination. Year must be between ${MIN_VALID_YEAR} and ${MAX_VALID_YEAR}, month must be between 1 and 12.`);
-                }
-
-                const state = get();
-                const stats = {
-                    ...getInitialFruitCounts(),
-                    total: 0
+                if (!newFruits[date]) {
+                    newFruits[date] = getInitialFruitCounts();
+                } newFruits[date] = {
+                    ...newFruits[date],
+                    [type]: (newFruits[date][type] || 0) + 1,
                 };
 
-                // Format month to ensure it matches the date string format (with leading zero)
-                const monthStr = month.toString().padStart(2, '0');
-                const yearStr = year.toString();
-                const prefix = `${yearStr}-${monthStr}`;
+                return { fruits: newFruits };
+            });
+        },
 
-                Object.entries(state.fruits)
-                    .filter(([date]) => date.startsWith(prefix))
-                    .forEach(([, counts]) => {
-                        stats.banana += counts.banana || 0;
-                        stats.apple += counts.apple || 0;
-                        stats.orange += counts.orange || 0;
-                    });
+        removeFruit: (date: string, type: FruitType) => {
+            if (!validateDate(date)) {
+                throw new Error(`Invalid date format: ${date}. Use YYYY-MM-DD format.`);
+            }
 
-                stats.total = stats.banana + stats.apple + stats.orange;
-                return stats;
-            },
-        }),
+            set((state) => {
+                // Return unchanged state if date doesn't exist
+                if (!state.fruits[date]) {
+                    return state;
+                }
+
+                const newFruits = { ...state.fruits };
+                const currentCount = newFruits[date][type] || 0;
+
+                if (currentCount === 0) {
+                    // Return unchanged state if there are no fruits to remove
+                    return state;
+                }
+
+                newFruits[date] = {
+                    ...newFruits[date],
+                    [type]: currentCount - 1
+                };
+
+                return { fruits: newFruits };
+            });
+        },
+
+        getMonthlyStats: (year: number, month: number) => {
+            if (!validateYearMonth(year, month)) {
+                throw new Error(`Invalid year/month combination. Year must be between ${MIN_VALID_YEAR} and ${MAX_VALID_YEAR}, month must be between 1 and 12.`);
+            }
+
+            const state = get();
+            const stats = {
+                ...getInitialFruitCounts(),
+                total: 0
+            };
+
+            // Format month to ensure it matches the date string format (with leading zero)
+            const monthStr = month.toString().padStart(2, '0');
+            const yearStr = year.toString();
+            const prefix = `${yearStr}-${monthStr}`;
+
+            Object.entries(state.fruits)
+                .filter(([date]) => date.startsWith(prefix))
+                .forEach(([, counts]) => {
+                    stats.banana += counts.banana || 0;
+                    stats.apple += counts.apple || 0;
+                    stats.orange += counts.orange || 0;
+                });
+
+            stats.total = stats.banana + stats.apple + stats.orange;
+            return stats;
+        },
+    }),
         {
             name: 'fruit-storage',
         }
